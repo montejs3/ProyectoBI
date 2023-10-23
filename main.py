@@ -28,3 +28,7 @@ def make_predictions(dataModel: DataModel):
     model = load("assets/modelo.joblib")
     result = model.predict(df)
     return result
+
+
+#Si lo quieren correr peguen esto en la terminalllll
+#uvicorn main:app --reload
