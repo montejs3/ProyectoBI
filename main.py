@@ -1,10 +1,13 @@
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
+import codecs
+import csv
 
 from DataModel import DataModel
 
 import pandas as pd
+import io
 
 from joblib import load
 
@@ -53,7 +56,53 @@ def test_endpoint(data: DataModel):
     
     text = data.Textos_espanol
 
-    return {"received_text": text}
+    #return {"received_text": text}
+    return {"received_text": [6]}
+
+@app.post("/uploadCsv")
+def uploadCsv(file: UploadFile = File(...)):
+    # csvReader = csv.DictReader(codecs.iterdecode(file.file, 'utf-8'))
+    # data = {}
+    # for rows in csvReader:             
+    #     key = rows['Textos_espanol'] 
+    #     data[key] = rows  
+    
+    # file.file.close()
+    # return data
+    data = file.file.read()
+    df = pd.read_csv(io.BytesIO(data)) 
+    #df = df.replace([pd.np.inf, -pd.np.inf], pd.np.nan)
+    
+    #records = df.to_dict(orient="records")
+    #json_data = df.to_json(orient="records")
+    records = df.to_dict(orient="records")
+    return records
+
+@app.post("/uploadExcel")
+def uploadExcel(file: UploadFile = File(...)):
+    #csvReader = csv.DictReader(codecs.iterdecode(file.file, 'utf-8'))
+    # df = pd.read_csv(file.file, encoding='utf-8')
+    
+    # return df.to_dict(orient="records")
+
+    # El problema es que el archivo no es como los que tenemos
+    # en el directorio sino que es un archivo como tal y tenemos
+    # que leer los bytes del archivo procesarlo nosotros mismos
+    # ya funciona pero pero el formato no esta cool
+
+    data = file.file.read()
+    df = pd.read_excel(io.BytesIO(data), engine="openpyxl") 
+    #df = df.replace([pd.np.inf, -pd.np.inf], pd.np.nan)
+    
+    json_data = df.to_json(orient="records")
+
+    return json_data
+
+    #Esto funciona con csv pero no excel, toca ver por que
+
+    # records = df.to_dict(orient="records")
+    # return records
+
 
 #Si lo quieren correr peguen esto en la terminalllll
 #uvicorn main:app --reload
