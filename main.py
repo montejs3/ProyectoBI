@@ -8,9 +8,31 @@ import pandas as pd
 
 from joblib import load
 
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from DataModel import DataModel
+import pandas as pd
+from joblib import load
+
+app = FastAPI()
+
+allowed_origins = [
+    "http://localhost:3000",
+]
+
+# Configure CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # You can specify specific HTTP methods if needed
+    allow_headers=["*"],  # You can specify specific headers if needed
+)
 
 @app.post("/predict")
 def make_predictions(dataModel: DataModel):
