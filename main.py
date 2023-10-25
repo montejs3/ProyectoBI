@@ -46,6 +46,8 @@ def make_predictions(dataModel: DataModel):
     # return result
     model_dump = dataModel.dict()
     df = pd.DataFrame({"Textos_espanol": model_dump["Textos_espanol"]})
+
+    #Probar eliminiar la linea siguiente ->
     df.to_csv("test_como_queda.csv", sep=",", index=False, encoding='utf-8')
     model = load('pipe.joblib')
     df['sdg'] = model.predict(df["Textos_espanol"])
